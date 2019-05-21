@@ -2,29 +2,38 @@
 
 namespace Kodus\Cache\Database;
 
+use function count;
+use PDO;
+use function implode;
+
 class PostgresAdapter extends Adapter
 {
     protected function createTable(): void
     {
-        $this->prepare(
-            "CREATE TABLE {$this->table_name} (\n"
-            . "  key CHARACTER VARYING NOT NULL PRIMARY KEY,\n"
-            . "  data BYTEA,\n"
-            . "  expires BIGINT\n"
-            . ")"
-        )->execute();
+        $this->unsafeExecute(
+            $this->prepare(
+                "CREATE TABLE {$this->table_name} (\n"
+                . "  key CHARACTER VARYING NOT NULL PRIMARY KEY,\n"
+                . "  data BYTEA,\n"
+                . "  expires BIGINT\n"
+                . ")"
+            )
+        );
 
-        $this->prepare(
-            "CREATE INDEX {$this->table_name}_expires_index ON {$this->table_name} USING BTREE (expires);"
-        )->execute();
+        $this->unsafeExecute(
+            $this->prepare(
+                "CREATE INDEX {$this->table_name}_expires_index ON {$this->table_name} USING BTREE (expires);"
+            )
+        );
     }
 
     public function select(string $key): ?CacheEntry
     {
-        $result = $this->fetch(
-            "SELECT * FROM {$this->table_name} WHERE key = :key",
-            ["key" => $key]
-        );
+        $statement = $this->prepare("SELECT * FROM {$this->table_name} WHERE key = :key");
+
+        $statement->bindValue("key", $key, PDO::PARAM_STR);
+
+        $result = $this->fetch($statement);
 
         return $result[0] ?? null;
     }
@@ -33,38 +42,46 @@ class PostgresAdapter extends Adapter
     {
         $placeholders = [];
 
-        $params = [];
+        for ($index = 0; $index < count($values); $index++) {
+            $placeholders[] = "(:key_{$index}, :data_{$index}, :expires)";
+        }
+
+        $statement = $this->prepare(
+            "INSERT INTO {$this->table_name} (key, data, expires)"
+            . " VALUES " . implode(", ", $placeholders)
+            . " ON CONFLICT (key) DO UPDATE SET data=EXCLUDED.data, expires=EXCLUDED.expires"
+        );
+
+        $statement->bindValue("expires", $expires);
 
         $index = 0;
 
-        foreach ($values as $key => $value) {
-            $placeholders[] = "(:key_{$index}, :data_{$index}, :expires_{$index})";
-
-            $params["key_{$index}"] = $key;
-            $params["data_{$index}"] = $value;
-            $params["expires_{$index}"] = $expires;
+        foreach ($values as $key => $data) {
+            $statement->bindValue("key_{$index}", $key, PDO::PARAM_STR);
+            $statement->bindValue("data_{$index}", $data, PDO::PARAM_LOB);
 
             $index += 1;
         }
 
-        $this->execute(
-            (
-                "INSERT INTO {$this->table_name} (key, data, expires)"
-                . " VALUES " . implode(", ", $placeholders)
-                . " ON CONFLICT (key) DO UPDATE SET data=EXCLUDED.data, expires=EXCLUDED.expires"
-            ),
-            $params
-        );
+        $this->execute($statement);
     }
 
     public function delete(string $key): void
     {
-        $this->execute("DELETE FROM {$this->table_name} WHERE key = :key", ["key" => $key]);
+        $statement = $this->prepare("DELETE FROM {$this->table_name} WHERE key = :key");
+
+        $statement->bindValue("key", $key, PDO::PARAM_STR);
+
+        $this->execute($statement);
     }
 
     public function deleteExpired(int $now): void
     {
-        $this->execute("DELETE FROM {$this->table_name} WHERE :now >= expires", ["now" => $now]);
+        $statement = $this->prepare("DELETE FROM {$this->table_name} WHERE :now >= expires");
+
+        $statement->bindValue("now", $now, PDO::PARAM_INT);
+
+        $this->execute($statement);
     }
 
     /**
@@ -74,16 +91,46 @@ class PostgresAdapter extends Adapter
      */
     public function selectMultiple(array $keys): array
     {
-        return $this->fetch("SELECT * FROM {$this->table_name} WHERE key IN (:keys)", ["keys" => $keys]);
+        $placeholders = [];
+
+        for ($index=0; $index<count($keys); $index++) {
+            $placeholders[] = ":key_{$index}";
+        }
+
+        $statement = $this->prepare(
+            "SELECT * FROM {$this->table_name} WHERE key IN (" . implode(", ", $placeholders) . ")"
+        );
+
+        foreach ($keys as $index => $key) {
+            $statement->bindValue("key_{$index}", $key, PDO::PARAM_STR);
+        }
+
+        return $this->fetch($statement);
     }
 
     public function deleteMultiple(array $keys): void
     {
-        $this->execute("DELETE FROM {$this->table_name} WHERE key IN (:keys)", ["keys" => $keys]);
+        $placeholders = [];
+
+        for ($index=0; $index<count($keys); $index++) {
+            $placeholders[] = ":key_{$index}";
+        }
+
+        $statement = $this->prepare(
+            "DELETE FROM {$this->table_name} WHERE key IN (" . implode(", ", $placeholders) . ")"
+        );
+
+        foreach ($keys as $index => $key) {
+            $statement->bindValue("key_{$index}", $key, PDO::PARAM_STR);
+        }
+
+        $this->execute($statement);
     }
 
     public function truncate(): void
     {
-        $this->execute("TRUNCATE TABLE {$this->table_name}");
+        $this->execute(
+            $this->prepare("TRUNCATE TABLE {$this->table_name}")
+        );
     }
 }

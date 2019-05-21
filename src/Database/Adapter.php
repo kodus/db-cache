@@ -2,12 +2,10 @@
 
 namespace Kodus\Cache\Database;
 
-use Generator;
 use function implode;
 use PDO;
 use PDOException;
 use PDOStatement;
-use function gettype;
 
 abstract class Adapter
 {
@@ -48,23 +46,9 @@ abstract class Adapter
 
     abstract protected function createTable(): void;
 
-    protected function execute(string $sql, array $params = []): PDOStatement
+    protected function prepare(string $sql): PDOStatement
     {
-        $statement = $this->prepare($sql, $params);
-
-        try {
-            if ($statement->execute() !== true) {
-                throw new PDOException(implode(" ", $statement->errorInfo()));
-            }
-        } catch (PDOException $error) {
-            $this->createTable();
-
-            if ($statement->execute() !== true) {
-                throw new PDOException(implode(" ", $statement->errorInfo()));
-            }
-        }
-
-        return $statement;
+        return $this->pdo->prepare($sql);
     }
 
     /**
@@ -73,9 +57,9 @@ abstract class Adapter
      *
      * @return CacheEntry[]
      */
-    protected function fetch(string $sql, array $params = []): array
+    protected function fetch(PDOStatement $statement): array
     {
-        $rows = $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $this->execute($statement)->fetchAll(PDO::FETCH_ASSOC);
 
         $result = [];
 
@@ -86,40 +70,23 @@ abstract class Adapter
         return $result;
     }
 
-    protected function prepare(string $sql, array $params = []): PDOStatement
+    protected function execute(PDOStatement $statement): PDOStatement
     {
-        static $PDO_TYPE = [
-            'integer' => PDO::PARAM_INT,
-            'boolean' => PDO::PARAM_BOOL,
-            'NULL'    => PDO::PARAM_NULL,
-        ];
+        try {
+            $this->unsafeExecute($statement);
+        } catch (PDOException $error) {
+            $this->createTable();
 
-        foreach ($params as $name => $value) {
-            if (is_array($value)) {
-                $placeholders = [];
-
-                foreach ($value as $key => $array_value) {
-                    $index = "{$name}_{$key}";
-                    $params[$index] = $array_value;
-                    $placeholders[] = ":{$index}";
-                }
-
-                $sql = str_replace(":{$name}", implode(", ", $placeholders), $sql);
-
-                unset($params[$name]);
-            }
-        }
-
-        $statement = $this->pdo->prepare($sql);
-
-        foreach ($params as $name => $value) {
-            $statement->bindValue(
-                ":{$name}",
-                $value,
-                $PDO_TYPE[gettype($value)] ?? PDO::PARAM_LOB
-            );
+            $this->unsafeExecute($statement);
         }
 
         return $statement;
+    }
+
+    protected function unsafeExecute(PDOStatement $statement): void
+    {
+        if ($statement->execute() !== true) {
+            throw new PDOException(implode(" ", $statement->errorInfo()));
+        }
     }
 }
