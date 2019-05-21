@@ -1,9 +1,9 @@
 <?php
 
-namespace Kodus\Cache\Test\Integration;
+namespace Kodus\Cache\Test;
 
-use Kodus\Cache\DatabaseCache;
 use Kodus\Cache\Tests\SimpleCacheTest;
+use Kodus\Cache\Tests\TestableDatabaseCache;
 use PDO;
 use PDOException;
 
@@ -11,6 +11,11 @@ abstract class DatabaseCacheIntegrationTest extends SimpleCacheTest
 {
     const TABLE_NAME  = "test_cache";
     const DEFAULT_TTL = 86400;
+
+    /**
+     * @var TestableDatabaseCache
+     */
+    protected $cache;
 
     /**
      * @var PDO
@@ -41,10 +46,32 @@ abstract class DatabaseCacheIntegrationTest extends SimpleCacheTest
      */
     public function createSimpleCache()
     {
-        return new DatabaseCache(
+        return new TestableDatabaseCache(
             self::$pdo,
             self::TABLE_NAME,
             self::DEFAULT_TTL
         );
+    }
+
+    protected function sleep(int $time)
+    {
+        $this->cache->timeTravel($time);
+    }
+
+    public function testCleanExpired()
+    {
+        $this->cache->set('key0', 'value', 5);
+        $this->cache->set('key1', 'value', 10);
+
+        $this->cache->timeTravel(5);
+        $this->cache->cleanExpired();
+
+        $this->assertFalse($this->cache->has('key0'), "key0 expires after 5 seconds");
+        $this->assertTrue($this->cache->has('key1'), "key1 has not expired");
+
+        $this->cache->timeTravel(5);
+        $this->cache->cleanExpired();
+
+        $this->assertFalse($this->cache->has('key1'), "key1 expires after 10 seconds");
     }
 }

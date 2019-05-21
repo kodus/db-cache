@@ -44,6 +44,8 @@ abstract class Adapter
 
     abstract public function truncate(): void;
 
+    abstract public function deleteExpired(int $now): void;
+
     abstract protected function createTable(): void;
 
     protected function execute(string $sql, array $params = []): PDOStatement

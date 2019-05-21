@@ -28,8 +28,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Kodus\\Cache\\Tests\\": "tests/",
-            "Kodus\\Cache\\Tests\\Integration\\": "tests/integration/"
+            "Kodus\\Cache\\Tests\\": "tests/"
         }
     }
 }
