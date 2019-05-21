@@ -6,7 +6,7 @@ use function count;
 use PDO;
 use function implode;
 
-class PostgresAdapter extends Adapter
+class PostgreSQLAdapter extends Adapter
 {
     protected function createTable(): void
     {

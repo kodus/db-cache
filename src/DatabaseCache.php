@@ -5,7 +5,8 @@ namespace Kodus\Cache;
 use DateInterval;
 use Kodus\Cache\Database\Adapter;
 use Kodus\Cache\Database\InvalidArgumentException;
-use Kodus\Cache\Database\PostgresAdapter;
+use Kodus\Cache\Database\MySQLAdapter;
+use Kodus\Cache\Database\PostgreSQLAdapter;
 use PDO;
 use Psr\SimpleCache\CacheInterface;
 use RuntimeException;
@@ -235,7 +236,9 @@ class DatabaseCache implements CacheInterface
 
         switch ($driver_name) {
             case "pgsql":
-                return new PostgresAdapter($pdo, $table_name);
+                return new PostgreSQLAdapter($pdo, $table_name);
+            case "mysql":
+                return new MySQLAdapter($pdo, $table_name);
         }
 
         throw new RuntimeException("Unsupported PDO driver: {$driver_name}");

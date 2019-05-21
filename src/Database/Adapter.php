@@ -64,7 +64,12 @@ abstract class Adapter
         $result = [];
 
         foreach ($rows as $row) {
-            $result[] = new CacheEntry($row["key"], stream_get_contents($row["data"]), $row["expires"]);
+            $result[] = new CacheEntry(
+                $row["key"],
+                is_resource($row["data"])
+                    ? stream_get_contents($row["data"])
+                    : $row["data"],
+                $row["expires"]);
         }
 
         return $result;
@@ -75,6 +80,7 @@ abstract class Adapter
         try {
             $this->unsafeExecute($statement);
         } catch (PDOException $error) {
+            // TODO only retry if the error is a missing table error
             $this->createTable();
 
             $this->unsafeExecute($statement);
