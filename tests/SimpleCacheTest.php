@@ -18,6 +18,8 @@ use function sort;
 use function str_repeat;
 
 /**
+ * TODO contribute back to `php-cache/integration-tests` project and depend on that
+ *
  * @see https://github.com/php-cache/integration-tests/blob/master/src/SimpleCacheTest.php
  */
 abstract class SimpleCacheTest extends TestCase
