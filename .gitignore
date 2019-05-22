@@ -1,6 +1,6 @@
 /.*
 !.git*
-!.travis*
+!.*.yml
 /vendor
 phpunit.xml
 clover.xml
