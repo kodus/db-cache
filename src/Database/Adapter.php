@@ -52,8 +52,7 @@ abstract class Adapter
     }
 
     /**
-     * @param string $sql
-     * @param array  $params
+     * @param PDOStatement $statement
      *
      * @return CacheEntry[]
      */
