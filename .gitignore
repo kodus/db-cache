@@ -3,3 +3,4 @@
 !.travis*
 /vendor
 phpunit.xml
+clover.xml

@@ -16,4 +16,9 @@ before_script:
   - psql -c 'CREATE DATABASE kodus_db_cache_test;' -U postgres
   - mysql -e 'CREATE DATABASE kodus_db_cache_test;'
 
-script: vendor/bin/phpunit
+script:
+  - if [ $(phpenv version-name) = "7.3" ]; then vendor/bin/phpunit --coverage-clover ./clover.xml; else vendor/bin/phpunit; fi
+
+after_script:
+  - if [ $(phpenv version-name) = "7.3" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [ $(phpenv version-name) = "7.3" ]; then php ocular.phar code-coverage:upload --format=php-clover ./clover.xml; fi
