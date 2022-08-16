@@ -107,7 +107,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function getMultiple($keys, $default = null)
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         if (! is_array($keys)) {
             if ($keys instanceof Traversable) {
