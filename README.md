@@ -7,7 +7,7 @@ and complete in a single round-trip.
 
 No dependencies beyond the PSR-16 interface.
 
-[![PHP Version](https://img.shields.io/badge/php-7.2%2B-blue.svg)](https://packagist.org/packages/kodus/db-cache)
+[![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://packagist.org/packages/kodus/db-cache)
 [![Build Status](https://travis-ci.org/kodus/db-cache.svg?branch=master)](https://travis-ci.org/kodus/db-cache)
 [![Code Coverage](https://scrutinizer-ci.com/g/kodus/db-cache/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodus/db-cache/?branch=master)
 [![Code Quality](https://scrutinizer-ci.com/g/kodus/db-cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodus/db-cache/?branch=master)
