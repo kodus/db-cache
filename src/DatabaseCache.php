@@ -100,7 +100,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function clear()
+    public function clear(): bool
     {
         $this->adapter->truncate();
 
