@@ -1,6 +1,6 @@
 <?php
 
-namespace Kodus\Cache\Test;
+namespace Kodus\Cache\Tests;
 
 use Kodus\Cache\Tests\SimpleCacheTest;
 use Kodus\Cache\Tests\TestableDatabaseCache;
