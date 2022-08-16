@@ -163,7 +163,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function deleteMultiple($keys)
+    public function deleteMultiple(iterable $keys): bool
     {
         if (! is_array($keys)) {
             if ($keys instanceof Traversable) {
