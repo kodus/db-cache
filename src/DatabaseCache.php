@@ -53,7 +53,7 @@ class DatabaseCache implements CacheInterface
         $this->default_ttl = $default_ttl;
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $this->validateKey($key);
 
