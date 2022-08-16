@@ -80,7 +80,7 @@ class DatabaseCache implements CacheInterface
         return $value;
     }
 
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, mixed $value, DateInterval|int|null $ttl = null): bool
     {
         $this->validateKey($key);
 
