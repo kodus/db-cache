@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kodus\Cache;
 
 use DateInterval;
@@ -253,7 +255,7 @@ class DatabaseCache implements CacheInterface
         if (is_int($ttl)) {
             return $this->getTime() + $ttl;
         } elseif ($ttl instanceof DateInterval) {
-            return date_create_from_format("U", $this->getTime())->add($ttl)->getTimestamp();
+            return date_create_from_format("U", (string) $this->getTime())->add($ttl)->getTimestamp();
         } elseif ($ttl === null) {
             return $this->getTime() + $this->default_ttl;
         } else {

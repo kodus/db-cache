@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kodus\Cache\Tests;
 
 use PDO;
 use PDOException;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\InvalidArgumentException;
+use TypeError;
 
 abstract class DatabaseCacheIntegrationTest extends TestCase
 {
@@ -205,7 +208,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
      */
     public function testSetMultipleInvalidTtl($ttl)
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         $this->cache->setMultiple(['key' => 'value'], $ttl);
     }
