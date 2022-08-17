@@ -49,14 +49,39 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
      *
      * @return array
      */
-    public static function invalidKeys()
+    public static function invalidStringKeys()
     {
-        return array_merge(
-            self::invalidArrayKeys(),
-            [
-                [2],
-            ]
-        );
+        return [
+            [''],
+            ['{str'],
+            ['rand{'],
+            ['rand{str'],
+            ['rand}str'],
+            ['rand(str'],
+            ['rand)str'],
+            ['rand/str'],
+            ['rand\\str'],
+            ['rand@str'],
+            ['rand:str'],
+        ];
+    }
+
+    /**
+     * Data provider for invalid cache keys.
+     *
+     * @return array
+     */
+    public static function invalidNonStringKeys()
+    {
+        return [
+            [true],
+            [false],
+            [null],
+            [2],
+            [2.5],
+            [new \stdClass()],
+            [['array']],
+        ];
     }
 
     /**
@@ -146,7 +171,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
 
     public function testSetMultipleNoIterable()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         $this->cache->setMultiple('key');
     }
@@ -311,9 +336,18 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidNonStringKeys
      */
-    public function testHasInvalidKeys($key)
+    public function testHasInvalidNonStringKeys($key)
+    {
+        $this->expectException(TypeError::class);
+        $this->cache->has($key);
+    }
+
+    /**
+     * @dataProvider invalidStringKeys
+     */
+    public function testHasInvalidStringKeys($key)
     {
         $this->expectException(InvalidArgumentException::class);
         $this->cache->has($key);
@@ -329,7 +363,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidStringKeys
      */
     public function testGetInvalidKeys($key)
     {
@@ -357,7 +391,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidStringKeys
      */
     public function testDeleteMultipleInvalidKeys($key)
     {
@@ -382,7 +416,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidStringKeys
      */
     public function testDeleteInvalidKeys($key)
     {
@@ -468,7 +502,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidStringKeys
      */
     public function testSetInvalidKeys($key)
     {
@@ -523,7 +557,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
 
     public function testGetMultipleNoIterable()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         $this->cache->getMultiple('key');
     }
@@ -546,7 +580,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider invalidStringKeys
      */
     public function testGetMultipleInvalidKeys($key)
     {
@@ -580,7 +614,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
 
     public function testDeleteMultipleNoIterable()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         $this->cache->deleteMultiple('key');
     }
@@ -599,7 +633,7 @@ abstract class DatabaseCacheIntegrationTest extends TestCase
      */
     public function testSetInvalidTtl($ttl)
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         $this->cache->set('key', 'value', $ttl);
     }
