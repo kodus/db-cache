@@ -28,7 +28,8 @@ jobs:
         env:
           MYSQL_DATABASE: kodus_db_cache_test
           MYSQL_ROOT_PASSWORD: root
-
+        ports:
+          - 3306:3306
     steps:
       - uses: actions/checkout@master
 
