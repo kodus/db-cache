@@ -19,10 +19,10 @@
   </testsuites>
   <php>
     <const name="DB_CACHE_TEST_PGSQL_DSN" value="pgsql:host=localhost;port=5432;dbname=kodus_db_cache_test"/>
-    <const name="DB_CACHE_TEST_PGSQL_USERNAME" value="postgres"/>
-    <const name="DB_CACHE_TEST_PGSQL_PASSWORD" value=""/>
+    <const name="DB_CACHE_TEST_PGSQL_USERNAME" value="root"/>
+    <const name="DB_CACHE_TEST_PGSQL_PASSWORD" value="root"/>
     <const name="DB_CACHE_TEST_MYSQL_DSN" value="mysql:host=localhost;port=3306;dbname=kodus_db_cache_test"/>
-    <const name="DB_CACHE_TEST_MYSQL_USERNAME" value="travis"/>
-    <const name="DB_CACHE_TEST_MYSQL_PASSWORD" value=""/>
+    <const name="DB_CACHE_TEST_MYSQL_USERNAME" value="root"/>
+    <const name="DB_CACHE_TEST_MYSQL_PASSWORD" value="root"/>
   </php>
 </phpunit>
