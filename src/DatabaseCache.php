@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kodus\Cache;
 
 use DateInterval;
@@ -53,7 +55,7 @@ class DatabaseCache implements CacheInterface
         $this->default_ttl = $default_ttl;
     }
 
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $this->validateKey($key);
 
@@ -80,7 +82,7 @@ class DatabaseCache implements CacheInterface
         return $value;
     }
 
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, mixed $value, DateInterval|int|null $ttl = null): bool
     {
         $this->validateKey($key);
 
@@ -91,7 +93,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function delete($key)
+    public function delete(string $key): bool
     {
         $this->validateKey($key);
 
@@ -100,14 +102,14 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function clear()
+    public function clear(): bool
     {
         $this->adapter->truncate();
 
         return true;
     }
 
-    public function getMultiple($keys, $default = null)
+    public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
         if (! is_array($keys)) {
             if ($keys instanceof Traversable) {
@@ -142,7 +144,7 @@ class DatabaseCache implements CacheInterface
         return $values;
     }
 
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple(iterable $values, DateInterval|int|null $ttl = null): bool
     {
         if (! is_array($values) && ! $values instanceof Traversable) {
             throw new InvalidArgumentException("keys must be either of type array or Traversable");
@@ -163,7 +165,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function deleteMultiple($keys)
+    public function deleteMultiple(iterable $keys): bool
     {
         if (! is_array($keys)) {
             if ($keys instanceof Traversable) {
@@ -184,7 +186,7 @@ class DatabaseCache implements CacheInterface
         return true;
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         return $this->get($key, $this) !== $this;
     }
@@ -253,7 +255,7 @@ class DatabaseCache implements CacheInterface
         if (is_int($ttl)) {
             return $this->getTime() + $ttl;
         } elseif ($ttl instanceof DateInterval) {
-            return date_create_from_format("U", $this->getTime())->add($ttl)->getTimestamp();
+            return date_create_from_format("U", (string) $this->getTime())->add($ttl)->getTimestamp();
         } elseif ($ttl === null) {
             return $this->getTime() + $this->default_ttl;
         } else {
