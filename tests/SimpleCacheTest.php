@@ -2,26 +2,10 @@
 
 namespace Kodus\Cache\Tests;
 
-use function array_merge;
-use function chr;
-use function is_array;
-use function is_bool;
-use function is_float;
-use function is_int;
-use function is_object;
-use function is_string;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use function sleep;
-use function sort;
-use function str_repeat;
 
-/**
- * TODO contribute back to `php-cache/integration-tests` project and depend on that
- *
- * @see https://github.com/php-cache/integration-tests/blob/master/src/SimpleCacheTest.php
- */
 abstract class SimpleCacheTest extends TestCase
 {
     /**
