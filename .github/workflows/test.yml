@@ -19,7 +19,7 @@ jobs:
       - name: Setup PostgreSQL
         run: |
           sudo systemctl start postgresql.service
-          psql -c 'CREATE DATABASE kodus_db_cache_test;' -U postgres
+          psql -c 'CREATE DATABASE kodus_db_cache_test;' -U postgres -h localhost
 
       - name: Setup MySQL
         run: |
