@@ -13,18 +13,24 @@ jobs:
         operating-system: [ ubuntu-latest, ubuntu-20.04 ]
         php: [ '8.0', '8.1' ]
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: kodus_db_cache_test
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        ports:
+          - 5432:5432
+      mysql:
+        image: mysql
+        env:
+          MYSQL_DATABASE: kodus_db_cache_test
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+
     steps:
       - uses: actions/checkout@master
-
-      - name: Setup PostgreSQL
-        run: |
-          sudo systemctl start postgresql.service
-          psql -c 'CREATE DATABASE kodus_db_cache_test;' -U postgres -h localhost
-
-      - name: Setup MySQL
-        run: |
-          sudo systemctl start mysql.service
-          mysql -e 'CREATE DATABASE kodus_db_cache_test;'
 
       - name: Setup PHP
         uses: nanasess/setup-php@master
@@ -36,3 +42,6 @@ jobs:
 
       - name: Run tests
         run: php vendor/bin/codecept run
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
