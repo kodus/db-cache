@@ -25,7 +25,7 @@ jobs:
           - 5432:5432
 
       mysql:
-        image: mysql
+        image: mysql:${{ matrix.mysql }}
         env:
           MYSQL_DATABASE: kodus_db_cache_test
           MYSQL_ROOT_PASSWORD: root
