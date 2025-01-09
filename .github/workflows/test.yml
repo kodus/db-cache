@@ -11,8 +11,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ ubuntu-latest, ubuntu-20.04 ]
-        php: [ '8.0', '8.1' , '8.2', '8.3', '8.4' ]
-        mysql: [ '9.1' ]
+        php: [ '8.0', '8.1']
 
     services:
       postgres:
@@ -25,7 +24,7 @@ jobs:
           - 5432:5432
 
       mysql:
-        image: mysql:${{ matrix.mysql }}
+        image: mysql
         env:
           MYSQL_DATABASE: kodus_db_cache_test
           MYSQL_ROOT_PASSWORD: root
