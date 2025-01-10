@@ -46,11 +46,5 @@ jobs:
             -   name: Verify Installed PHP Extensions
                 run: php -m
 
-            -   name: Test MySQL Connectivity
-                run: sudo apt-get update && sudo apt-get install -y mysql-client; mysqladmin ping -h mysql -u root --password=root
-
-            -   name: Test PostgreSQL Connectivity
-                run: apt-get update && apt-get install -y postgresql-client; pg_isready -h postgres -U root
-
             -   name: Run tests
                 run: php vendor/bin/phpunit
