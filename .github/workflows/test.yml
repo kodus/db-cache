@@ -55,5 +55,5 @@ jobs:
                         echo 'Connection failed: ' . \$e->getMessage();
                     }"
 
-                  -   name: Run tests
-                      run: php vendor/bin/phpunit
+            -   name: Run tests
+                run: php vendor/bin/phpunit
