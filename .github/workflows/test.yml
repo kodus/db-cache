@@ -35,7 +35,7 @@ jobs:
             -   uses: actions/checkout@master
 
             -   name: Setup PHP
-                uses: nanasess/setup-php@master
+                uses: shivammathur/setup-php@master
                 with:
                     php-version: ${{ matrix.php }}
 
@@ -54,6 +54,9 @@ jobs:
                     } catch (PDOException \$e) {
                         echo 'Connection failed: ' . \$e->getMessage();
                     }"
+
+            -   name: Sleep for 10 seconds - wait for MySQL to start
+                run: sleep 10
 
             -   name: Run tests
                 run: php vendor/bin/phpunit
