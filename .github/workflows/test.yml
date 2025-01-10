@@ -35,7 +35,7 @@ jobs:
             -   uses: actions/checkout@master
 
             -   name: Setup PHP
-                uses: shivammathur/setup-php@master
+                uses: nanasess/setup-php@master
                 with:
                     php-version: ${{ matrix.php }}
 
@@ -45,5 +45,15 @@ jobs:
             -   name: Verify Installed PHP Extensions
                 run: php -m
 
-            -   name: Run tests
-                run: php vendor/bin/phpunit
+            -   name: Test MySQL Connection
+                run: |
+                    php -r "
+                    try {
+                        new PDO('mysql:host=127.0.0.1;port=3306;dbname=kodus_db_cache_test', 'root', 'root');
+                        echo 'Connection successful';
+                    } catch (PDOException \$e) {
+                        echo 'Connection failed: ' . \$e->getMessage();
+                    }"
+
+                  -   name: Run tests
+                      run: php vendor/bin/phpunit
