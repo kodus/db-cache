@@ -1,50 +1,56 @@
 name: Codeception tests
 
-on: [push]
+on: [ push ]
 
 jobs:
-  build:
-    name: ${{matrix.operating-system}}, PHP ${{ matrix.php }}
+    build:
+        name: ${{matrix.operating-system}}, PHP ${{ matrix.php }}
 
-    runs-on: ${{ matrix.operating-system }}
+        runs-on: ${{ matrix.operating-system }}
 
-    strategy:
-      matrix:
-        operating-system: [ ubuntu-latest, ubuntu-20.04 ]
-        php: [ '8.0', '8.1']
+        strategy:
+            matrix:
+                operating-system: [ ubuntu-latest, ubuntu-20.04 ]
+                php: [ '8.0', '8.1' ]
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: kodus_db_cache_test
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-        ports:
-          - 5432:5432
+        services:
+            postgres:
+                image: postgres
+                env:
+                    POSTGRES_DB: kodus_db_cache_test
+                    POSTGRES_USER: root
+                    POSTGRES_PASSWORD: root
+                ports:
+                    - 5432:5432
 
-      mysql:
-        image: mysql
-        env:
-          MYSQL_DATABASE: kodus_db_cache_test
-          MYSQL_USER: root
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
+            mysql:
+                image: mysql
+                env:
+                    MYSQL_DATABASE: kodus_db_cache_test
+                    MYSQL_USER: root
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
 
-    steps:
-      - uses: actions/checkout@master
+        steps:
+            -   uses: actions/checkout@master
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@master
-        with:
-          php-version: ${{ matrix.php }}
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@master
+                with:
+                    php-version: ${{ matrix.php }}
 
-      - name: Install dependencies
-        run: composer install
+            -   name: Install dependencies
+                run: composer install
 
-      - name: Verify Installed PHP Extensions
-        run: php -m
+            -   name: Verify Installed PHP Extensions
+                run: php -m
 
-      - name: Run tests
-        run: php vendor/bin/phpunit
+            -   name: Test MySQL Connectivity
+                run: apt-get update && apt-get install -y mysql-client; mysqladmin ping -h mysql -u root --password=root
+
+            -   name: Test PostgreSQL Connectivity
+                run: apt-get update && apt-get install -y postgresql-client; pg_isready -h postgres -U root
+
+            -   name: Run tests
+                run: php vendor/bin/phpunit
