@@ -43,5 +43,8 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+      - name: Verify Installed PHP Extensions
+        run: php -m
+
       - name: Run tests
         run: php vendor/bin/phpunit
