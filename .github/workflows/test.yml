@@ -1,46 +1,49 @@
 name: Codeception tests
 
-on: [push]
+on: [ push ]
 
 jobs:
-  build:
-    name: ${{matrix.operating-system}}, PHP ${{ matrix.php }}
+    build:
+        name: ${{matrix.operating-system}}, PHP ${{ matrix.php }}
 
-    runs-on: ${{ matrix.operating-system }}
+        runs-on: ${{ matrix.operating-system }}
 
-    strategy:
-      matrix:
-        operating-system: [ ubuntu-latest, ubuntu-20.04 ]
-        php: [ '8.0', '8.1' ]
+        strategy:
+            matrix:
+                operating-system: [ ubuntu-latest, ubuntu-22.04 ]
+                php: [ '8.0', '8.1','8.2','8.3','8.4' ]
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: kodus_db_cache_test
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-        ports:
-          - 5432:5432
+        services:
+            postgres:
+                image: postgres
+                env:
+                    POSTGRES_DB: kodus_db_cache_test
+                    POSTGRES_USER: root
+                    POSTGRES_PASSWORD: root
+                ports:
+                    - 5432:5432
 
-      mysql:
-        image: mysql
-        env:
-          MYSQL_DATABASE: kodus_db_cache_test
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
+            mysql:
+                image: mysql
+                env:
+                    MYSQL_DATABASE: kodus_db_cache_test
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
 
-    steps:
-      - uses: actions/checkout@master
+        steps:
+            -   uses: actions/checkout@master
 
-      - name: Setup PHP
-        uses: nanasess/setup-php@master
-        with:
-          php-version: ${{ matrix.php }}
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@master
+                with:
+                    php-version: ${{ matrix.php }}
 
-      - name: Install dependencies
-        run: composer install
+            -   name: Install dependencies
+                run: composer install
 
-      - name: Run tests
-        run: php vendor/bin/phpunit
+            -   name: Sleep for 10 seconds - wait for MySQL to start
+                run: sleep 10
+
+            -   name: Run tests
+                run: php vendor/bin/phpunit
