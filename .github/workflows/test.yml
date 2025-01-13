@@ -42,8 +42,21 @@ jobs:
             -   name: Install dependencies
                 run: composer install
 
+            -   name: Verify Installed PHP Extensions
+                run: php -m
+
             -   name: Sleep for 10 seconds - wait for MySQL to start
                 run: sleep 10
+
+            -   name: Test MySQL Connection
+                run: |
+                    php -r "
+                    try {
+                        new PDO('mysql:host=127.0.0.1;port=3306;dbname=kodus_db_cache_test', 'root', 'root');
+                        echo 'Connection successful';
+                    } catch (PDOException \$e) {
+                        echo 'Connection failed: ' . \$e->getMessage();
+                    }"
 
             -   name: Run tests
                 run: php vendor/bin/phpunit
