@@ -55,8 +55,8 @@ jobs:
                         echo 'Connection failed: ' . \$e->getMessage();
                     }"
 
-            -   name: Sleep for 2 seconds - wait for MySQL to start
-                run: sleep 2
+            -   name: Sleep for 10 seconds - wait for MySQL to start
+                run: sleep 10
 
             -   name: Run tests
                 run: php vendor/bin/phpunit
